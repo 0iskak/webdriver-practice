@@ -1,11 +1,12 @@
+package me.iskak.webdriver.test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 import me.iskak.webdriver.cloud.CloudSearchPage;
 import me.iskak.webdriver.cloud.ComputeEngineCalculatorPage;
 import me.iskak.webdriver.paste.CreatePastePage;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.edge.EdgeDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -14,16 +15,9 @@ public class WebDriverTest {
     private CreatePastePage createPastePage;
     private CloudSearchPage cloudSearchPage;
 
-    @BeforeClass
-    private void initProperty() {
-        String driverPropertyName = "webdriver.edge.driver";
-        if (System.getProperty(driverPropertyName) == null)
-            System.setProperty(driverPropertyName, "A:\\msedgedriver.exe");
-    }
-
     @BeforeMethod
     private void initDriver() {
-        driver = new EdgeDriver();
+        driver = WebDriverManager.chromedriver().create();
     }
 
     @BeforeMethod(dependsOnMethods = "initDriver", onlyForGroups = "paste")
@@ -33,12 +27,12 @@ public class WebDriverTest {
     }
 
     @BeforeMethod(dependsOnMethods = "initDriver", onlyForGroups = "cloud")
-    private void initGloudDriver() {
+    private void initGcloudDriver() {
         driver.get("https://cloud.google.com/");
         cloudSearchPage = new CloudSearchPage(driver);
     }
 
-    @AfterMethod
+    @AfterMethod(groups = {"paste", "cloud"})
     private void quitDriver() {
         driver.quit();
     }
@@ -68,7 +62,7 @@ public class WebDriverTest {
                 .setTitle(title)
                 .createPastePage();
 
-        Assert.assertTrue(pastePage.getTitle().startsWith(title), "Paste title");
+        Assert.assertEquals(pastePage.getTitle(), title + " - TextBin", "Paste title");
         Assert.assertEquals(pastePage.getSyntax(), syntax, "Paste syntax");
         Assert.assertEquals(pastePage.getCode(), code, "Paste code");
     }

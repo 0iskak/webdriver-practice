@@ -1,6 +1,7 @@
 package me.iskak.webdriver.paste;
 
 import me.iskak.webdriver.Page;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -20,7 +21,7 @@ public class CreatePastePage extends Page {
     private WebElement createButton;
 
     @FindBy(css = "select[name='syntax']")
-    private WebElement syntaxtSelect;
+    private WebElement syntaxSelect;
 
     public CreatePastePage(WebDriver driver) {
         super(driver, null);
@@ -44,11 +45,12 @@ public class CreatePastePage extends Page {
     }
 
     public CreatePastePage setSyntax(String syntax) {
-        new Select(syntaxtSelect).selectByVisibleText(syntax);
+        new Select(syntaxSelect).selectByVisibleText(syntax);
         return this;
     }
 
     public PastePage createPastePage() {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true)", createButton);
         createButton.click();
         return new PastePage(driver);
     }
